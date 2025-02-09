@@ -1,0 +1,95 @@
+command_id // strcat("%d", "%s")
+1 ss join ns
+"%s"
+"[path]"
+
+TREE LOCK
+2 create file
+"%s %d %d"
+"path perms type"
+
+3 delete
+"%d %s"
+"ssid path"
+
+4 copy
+"%d %d %s"
+"ssid1 ssid2 path"
+
+TREE NOT LOCK
+5 read
+"%s"
+"path"
+
+6 write
+"%d %s"
+"ssid path"
+
+7 getinfo
+"%d %s"
+"ssid path"
+
+
+transaction requests to NM from CLIENT:
+
+  "LIST <path>;"
+* "CREATE <path> <type>;"              type=0 for file, type=1 for folder
+* "DELETE <path>;"
+* "COPY <path> <path>;"
+  "READ <path>;"
+* "WRITE <path> <opt> <localfile>/<text>;"     if opt=0, open localfile; if opt=1, send <text>
+  "GETINFO <path>;"
+
+*are operations that communicate with SS
+
+
+transaction requests to SS:
+
+"REQ <jobid> <jobdata>;"
+"TREE <jobid>;"
+"TRANSFER <serverdata> <jobid>;"
+"RECEIVE <serverdata> <jobid>;"
+
+updates from SS to NM:
+
+"HEARTBEAT;"
+"REQ <jobid> <data>;"
+"REQ <jobid> STOP;"
+"DISCONNECT;"
+"ERROR <jobid> <code> <message>;"        // job terminates if error
+
+TRANSACTION FLOW:
+    type of transaction determined
+    storage server informed of the job
+    storage server locked
+    if needed, Client/another storage server connects to storage server for the job
+    transfer of data
+    storage server unlocked
+    acknowledgement sent to naming server by storage server and/or client
+    Client request array and server requests count updated
+    naming server tree locked
+    tree changes
+    naming server tree unlocked
+    acknowledgement sent to client
+
+    *if acknowledgement not recieved or error recieved, tree not changed and effort to rever change\
+    in the storage server using one of the backup servers
+
+After creating a file, storage server sends its details like normal (most importantly size)
+
+REQUEST PROCESSING FLOW:
+    Client sends request to NM
+    NM updates client requests array
+    NM updates server requests count
+    Job request sent to server
+    Request added to job queue
+    data is sent to NM occasionally and once job is done, STOP is sent
+    Request array and job count handled on client
+
+A wait array on Storage server is maintained and its count is maintained on NM
+If the count is full, job is rejected with an error message.
+
+FORMAT OF <path>: (either of these)
+    <id>:dir/dir/.../file
+    dir/dir/.../file
+    file

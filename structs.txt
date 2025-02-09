@@ -1,0 +1,36 @@
+enum Status {}
+struct job {
+    int id;
+    int type;
+    int server;
+    int client;
+    enum Status status; // 0 -> qd,
+                // 1 -> running,
+                // 2-> done,
+                // -1 -> failure
+    char * job_string;
+};
+
+struct SS {
+    int id;
+    char* ip;
+    int socket;
+    lock_t lock;
+    Node * root;
+    struct SS* red1;
+    struct SS* red2;
+};
+
+enum type {FILE, DIR};
+typedef struct _Node {
+    int id; // server
+    struct Node * children;
+    struct Node parent;
+    int size; // TODO
+    char name[256];
+    enum type Type;
+    int perms;
+} *Node;
+
+transaction
+jobs -> 5

@@ -1,0 +1,9 @@
+PBGE is a game engine built over the famous Blender 3D tool. It is internally integrated in such a way that what you see in the Blender viewport (EEVEE) is what you will see in-game.
+
+
+Thanks to this integration we have:
+
+    No need for an import-export pipeline. Since Blender supports 3D modelling, sculpting and UV mapping, everything made in the UPBGE can be used "as is".
+    Rapid iteration. Simply pressing the "P" key will start your game in the active viewport, allowing you to get instant feedback both visually and in terms of gameplay and logic.
+    Implicit updates. All the new features for Blender are automatically included in each UPBGE release.
+    A unified workflow. The game engine specific workspaces, editors, panels and nodes follow the same conventions and standards as Blender itself.
